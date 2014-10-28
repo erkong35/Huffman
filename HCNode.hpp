@@ -24,7 +24,14 @@ public:
 	 HCNode* c0 = 0,
 	 HCNode* c1 = 0,
 	 HCNode* p = 0)
-    : count(count), symbol(symbol), c0(c0), c1(c1), p(p) { }
+    : count(count), symbol(symbol), c0(c0), c1(c1), p(p) {
+        if(c0 != 0){
+            c0->p = this;
+        }
+        if(c1 != 0){
+            c1->p = this;
+        }
+    }
 
   /** Less-than comparison, so HCNodes will work in std::priority_queue
    *  We want small counts to have high priority.
