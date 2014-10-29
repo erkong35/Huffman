@@ -15,6 +15,13 @@ int main(int argc, char* argv[]){
         ifstream inFile;
         ofstream outFile;
         inFile.open(argv[1], ios::binary);
+
+        // Checks if input exists and prints error if it does not
+        if(!inFile){
+            cout << "Input file does not exist, please try again!" << endl;
+            return 0;
+        }
+
         outFile.open(argv[2], ios::binary);
 
         // Creates the frequency vector by reading the header
