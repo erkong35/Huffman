@@ -40,7 +40,7 @@ using namespace std;
         if(pq.size() == 1){
             smallest = pq.top();
             pq.pop();
-            tmpParent = new HCNode(smallest->count, (char) 33);
+            tmpParent = new HCNode(smallest->count, (char) smallest->symbol);
             smallest->p = tmpParent;
             tmpParent->c0 = smallest;
             root = tmpParent;
@@ -53,8 +53,17 @@ using namespace std;
             pq.pop();
             secSmallest = pq.top();
             pq.pop();
-            tmpParent = new HCNode(smallest->count + secSmallest->count,
-                                 (char) 33);
+
+            // Smaller symbol propagates its character to the parent
+            if(comp(smallest, secSmallest)){
+                tmpParent = new HCNode(smallest->count + secSmallest->count,
+                                       (char) secSmallest->symbol);
+            }
+            else {
+                tmpParent = new HCNode(smallest->count + secSmallest->count,
+                                       (char) smallest->symbol);
+            }
+
             pq.push(tmpParent);
             smallest->p = tmpParent;
             secSmallest->p = tmpParent;

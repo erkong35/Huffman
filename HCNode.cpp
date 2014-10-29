@@ -20,6 +20,6 @@ using namespace std;
 
 
 bool comp(HCNode* one, HCNode* other){
-    return one->symbol > other->symbol;
+    return (char)one->symbol > (char)other->symbol;
 }
 
