@@ -1,5 +1,3 @@
-
-
 #include "HCNode.hpp"
 #include <iostream>
 

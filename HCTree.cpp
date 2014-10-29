@@ -8,9 +8,8 @@
 
 using namespace std;
 
-
-
     HCTree::~HCTree(){}
+
     /** Use the Huffman algorithm to build a Huffman coding trie.
      *  PRECONDITION: freqs is a vector of ints, such that freqs[i] is 
      *  the frequency of occurrence of byte i in the message.
@@ -20,10 +19,11 @@ using namespace std;
     void HCTree::build(const vector<int>& freqs){
         HCNode* smallest;
         HCNode* secSmallest;
-        HCNode* freqSum;
-
+        HCNode* tmpParent;
         priority_queue<HCNode*, vector<HCNode*>, HCNodePtrComp> pq;
-        for(int i = 0; i < leaves.size(); i++){
+
+        // Adds nodes to the leaves vector and the pq for sorting
+        for(unsigned int i = 0; i < leaves.size(); i++){
             if(freqs[i] != 0){
                 HCNode* temp = new HCNode(freqs[i], (byte)i);
                 leaves[i] = temp;
@@ -31,105 +31,39 @@ using namespace std;
             }
         }
 
-/*        for(int j = 0; j < leaves.size(); j++){
-            if(leaves[j] != 0){
-                pq.push(leaves[j]);
-            }
-        }*/
+        // Handles when there are no symbols (empty txt file) just returns
         if(pq.size() == 0){
             return;
         }
-        while(pq.size() > 1){
+
+        // Handles when there is only 1 symbol (only smallest is used)
+        if(pq.size() == 1){
             smallest = pq.top();
             pq.pop();
-            secSmallest = pq.top();
-            pq.pop();
-            freqSum = new HCNode(smallest->count + secSmallest->count,
-                                 (char) 33);
-            pq.push(freqSum);
-            smallest->p = freqSum;
-            secSmallest->p = freqSum;
-            freqSum->c0 = secSmallest;
-            freqSum->c1 = smallest; 
-        }
-        root = freqSum;
-
-/*        if(pq.size() == 1){
-            HCNode* onlyChild = pq.top();
-            int childI = 0;
-            for(int i = 0; i < leaves.size(); i++){
-                if(leaves[i] != 0 && leaves[i]->symbol == onlyChild->symbol){
-                    childI =  i;
-                }
-            }
-            pq.pop();
-            HCNode* newParent = new HCNode(onlyChild->count, 
-                                           onlyChild->symbol,
-                                           leaves[childI]);
-            pq.push(newParent);
-            leaves[childI]->p = newParent;
-            root = pq.top();
-            pq.pop();
+            tmpParent = new HCNode(smallest->count, (char) 33);
+            smallest->p = tmpParent;
+            tmpParent->c0 = smallest;
+            root = tmpParent;
             return;
         }
-        HCNode* smallest;
-        HCNode* secSmallest;
+
+        // Handles when there are 2 more symbols
         while(pq.size() > 1){
             smallest = pq.top();
-            int smallI, secSmallI;
-            for(int i = 0; i < leaves.size(); i++){
-                if(leaves[i] != 0 && leaves[i]->symbol == smallest->symbol){
-                    smallI =  i;
-                }
-            }
             pq.pop();
             secSmallest = pq.top();
-            for(int i = 0; i < leaves.size(); i++){
-                if(leaves[i] != 0 && leaves[i]->symbol == secSmallest->symbol){
-                    secSmallI = i;
-                }
-            }
             pq.pop();
-            if(comp(smallest, secSmallest)){
-                HCNode* newParent = new HCNode(smallest->count + 
-                                               secSmallest->count, 
-                                               secSmallest->symbol,
-                                               leaves[smallI],
-                                               leaves[secSmallI]);  
-                leaves[smallI]->p = newParent;
-                leaves[secSmallI]->p = newParent;
-                cout << "Side1" << endl;
-            cout << (char)newParent->symbol<<endl;
-            cout << (char)newParent->c0->symbol<<endl;
-            cout << (char)newParent->c1->symbol<<endl;
-
-                pq.push(newParent);
-            }
-            else{ 
-                HCNode* newParent = new HCNode(smallest->count + 
-                                               secSmallest->count, 
-                                               smallest->symbol,
-                                               leaves[secSmallI], 
-                                               leaves[smallI]); 
-                pq.push(newParent);
-                cout << "Side2" << endl;
-            cout << (char)newParent->c0->symbol<<endl;
-            cout << (char)newParent->c1->symbol<<endl;
-                leaves[smallI]->p = newParent;
-                leaves[secSmallI]->p = newParent;
-            }
+            tmpParent = new HCNode(smallest->count + secSmallest->count,
+                                 (char) 33);
+            pq.push(tmpParent);
+            smallest->p = tmpParent;
+            secSmallest->p = tmpParent;
+            tmpParent->c0 = secSmallest;
+            tmpParent->c1 = smallest; 
         }
-        cout << "root" << endl;
-        root = pq.top();
-        cout << (char)root->symbol << endl;
-        cout << (char)root->c0->symbol << endl;
-        cout << (char)root->c1->symbol << endl;
-        cout << (char)root->c0->c0->symbol << endl;
-        cout << (char)root->c0->c1->symbol << endl;
-
-        pq.pop();*/
+        root = tmpParent;
     }
-           
+
     /** Write to the given BitOutputStream
      *  the sequence of bits coding the given symbol.
      *  PRECONDITION: build() has been called, to create the coding
@@ -147,7 +81,8 @@ using namespace std;
     void HCTree::encode(byte symbol, ofstream& out) const{
         vector<int> encodedSymbol;
         int i = 0;
-        for(int j = 0; j < leaves.size(); j++){
+        // Finds the index for the symbol in leaves
+        for(unsigned int j = 0; j < leaves.size(); j++){
             if(leaves[j] != 0 && leaves[j]->symbol == symbol){
                 i = j;
                 break;
@@ -155,10 +90,7 @@ using namespace std;
         }
         
         HCNode* tmp = leaves[i];
-
-        if(leaves[i] == 0){
-            return;
-        }
+        // Creates the path for the leaf
         while(tmp->p != NULL){
             if(tmp->p->c0 == tmp){
                 encodedSymbol.push_back(0);
@@ -169,8 +101,9 @@ using namespace std;
             tmp = tmp->p; 
         }
 
+        // Reverses the path because we started from the bottom
         reverse(encodedSymbol.begin(), encodedSymbol.end());
-        for(int j = 0; j < encodedSymbol.size(); j++){
+        for(unsigned int j = 0; j < encodedSymbol.size(); j++){
             out << encodedSymbol[j];
         }
     }
@@ -197,6 +130,7 @@ using namespace std;
             if(! in.good()){
                 return -1;
             }
+            // Traverses the tree until the correct symbol is reached
             if(ch == '1'){
                 if(tmp->c1 != NULL){
                     tmp = tmp->c1;
@@ -213,15 +147,6 @@ using namespace std;
                     return tmp->symbol;
                 }
             }
-          //  if(tempBit == 0 && tmp->c0 != NULL){
-          //      tmp = tmp->c0;
-          //  }
-          //  else if(tempBit == 1 && tmp->c1 != NULL){
-          //      tmp = tmp->c1;
-          //  } 
-          //  else {
-          //      break;
-          //  }
         }
     }
 

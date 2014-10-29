@@ -16,16 +16,19 @@ int main(int argc, char* argv[]){
         ofstream outFile;
         inFile.open(argv[1], ios::binary);
         outFile.open(argv[2], ios::binary);
-        string freqStr;
-        int value;
 
-        for(int i = 0; i < frequency.size(); i++){
+        // Creates the frequency vector by reading the header
+        int value;
+        for(unsigned int i = 0; i < frequency.size(); i++){
             inFile >> value;
             frequency[i] = value;
         }
         
+        // Building the tree using the frequencies
         HCTree* tree = new HCTree();
         tree->build(frequency);
+
+        // Decodes the compressed files and writes to the output file
         int val;
         while(1){
            val = tree->decode(inFile);

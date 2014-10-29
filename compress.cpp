@@ -16,6 +16,7 @@ int main(int argc, char* argv[]){
         inFile.open(argv[1], ios::binary);
         outFile.open(argv[2], ios::binary);
         int value;
+        // Reads in the file and creates the vector of frequencys
         while(1){
            value = (int)inFile.get();
            if(inFile.eof()){
@@ -23,15 +24,19 @@ int main(int argc, char* argv[]){
            }
            frequency[value]++;
         }
+        inFile.close();
 
-        for(int i = 0; i < frequency.size(); i++){
+        // Prints out the vector of frequency as the header
+        for(unsigned int i = 0; i < frequency.size(); i++){
             outFile << (frequency[i]);
             outFile << " ";
         }
 
-        inFile.close();
+        // Building the tree using the frequency of symbols
         HCTree* tree = new HCTree();
         tree->build(frequency);
+
+        // Encodes the symbols into binary
         inFile.open(argv[1], ios::binary);
         while(1){
            byte symb = inFile.get();
