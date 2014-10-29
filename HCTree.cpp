@@ -9,8 +9,8 @@
 using namespace std;
 
 
-    HCTree::~HCTree(){}
 
+    HCTree::~HCTree(){}
     /** Use the Huffman algorithm to build a Huffman coding trie.
      *  PRECONDITION: freqs is a vector of ints, such that freqs[i] is 
      *  the frequency of occurrence of byte i in the message.
@@ -21,7 +21,7 @@ using namespace std;
         for(int i = 0; i < leaves.size(); i++){
             if(freqs[i] != 0){
                 HCNode* temp = new HCNode(freqs[i], i);
-                leaves.push_back(temp);
+                leaves[i] = temp;
             }
         }
 
@@ -31,24 +31,60 @@ using namespace std;
                 pq.push(leaves[j]);
             }
         }
-       
-        while(pq.size() > 1){
+        
+        if(pq.size() == 1){
+            HCNode* onlyChild = pq.top();
+            int childI = 0;
+            for(int i = 0; i < leaves.size(); i++){
+                if(leaves[i] != 0 && leaves[i]->symbol == onlyChild->symbol){
+                    childI =  i;
+                }
+            }
+            pq.pop();
+            HCNode* newParent = new HCNode(onlyChild->count, 
+                                           onlyChild->symbol,
+                                           leaves[childI]);
+            leaves[childI]->p = newParent;
+            pq.push(newParent);
+            root = pq.top();
+            pq.pop();
+            return;
+        }
+
+        while(pq.size() > 0){
             HCNode* smallest = pq.top();
+            int smallI, secSmallI;
+            for(int i = 0; i < leaves.size(); i++){
+                if(leaves[i] != 0 && leaves[i]->symbol == smallest->symbol){
+                    smallI =  i;
+                }
+            }
             pq.pop();
             HCNode* secSmallest = pq.top();
+            for(int i = 0; i < leaves.size(); i++){
+                if(leaves[i] != 0 && leaves[i]->symbol == secSmallest->symbol){
+                    secSmallI = i;
+                }
+            }
             pq.pop();
             if(comp(smallest, secSmallest)){
                 HCNode* newParent = new HCNode(smallest->count + 
                                                secSmallest->count, 
                                                secSmallest->symbol,
-                                               smallest, secSmallest);
+                                               leaves[smallI],
+                                               leaves[secSmallI]);  
+                leaves[smallI]->p = newParent;
+                leaves[secSmallI]->p = newParent;
                 pq.push(newParent);
             }
             else{ 
                 HCNode* newParent = new HCNode(smallest->count + 
                                                secSmallest->count, 
                                                smallest->symbol,
-                                               secSmallest, smallest);
+                                               leaves[secSmallI], 
+                                               leaves[smallI]); 
+                leaves[smallI]->p = newParent;
+                leaves[secSmallI]->p = newParent;
                 pq.push(newParent);
             }
         }
@@ -73,10 +109,18 @@ using namespace std;
     void HCTree::encode(byte symbol, ofstream& out) const{
         vector<int> encodedSymbol;
         int i = 0;
-        while(leaves[i]->symbol != symbol){
-            i++;
+        for(int j = 0; j < leaves.size(); j++){
+            if(leaves[j] != 0 && leaves[j]->symbol == symbol){
+                i = j;
+                break;
+            }
         }
+        
         HCNode* tmp = leaves[i];
+
+        if(leaves[i] == 0){
+            return;
+        }
         while(tmp->p != NULL){
             if(tmp->p->c0 == tmp){
                 encodedSymbol.push_back(0);
@@ -86,9 +130,10 @@ using namespace std;
             }
             tmp = tmp->p; 
         }
+
         reverse(encodedSymbol.begin(), encodedSymbol.end());
         for(int j = 0; j < encodedSymbol.size(); j++){
-            out.put(encodedSymbol[j]);
+            out << encodedSymbol[j];
         }
     }
 

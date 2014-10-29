@@ -13,8 +13,8 @@ int main(int argc, char* argv[]){
         vector<int> frequency = vector<int>(256, 0);
         ifstream inFile;
         ofstream outFile;
-        inFile.open(argv[1]);
-        outFile.open(argv[2]);
+        inFile.open(argv[1], ios::binary);
+        outFile.open(argv[2], ios::binary);
         while(!inFile.eof()){
            int value = (int)inFile.get();
            frequency[value] = frequency[value] + 1;
@@ -22,7 +22,7 @@ int main(int argc, char* argv[]){
         inFile.close();
         HCTree* tree = new HCTree();
         tree->build(frequency);
-        inFile.open(argv[1]);
+        inFile.open(argv[1], ios::binary);
         while(!inFile.eof()){
            tree->encode(inFile.get(), outFile);
         }
