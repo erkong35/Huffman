@@ -10,23 +10,38 @@ int main(int argc, char* argv[]){
         cout << "Wrong number of arguments, please enter two files" << endl;
     }
     else{
-        vector<int> frequency = vector<int>(256, 0);
+        vector<int> frequency(256, 0);
         ifstream inFile;
         ofstream outFile;
         inFile.open(argv[1], ios::binary);
         outFile.open(argv[2], ios::binary);
-        while(!inFile.eof()){
-           int value = (int)inFile.get();
-           frequency[value] = frequency[value] + 1;
+        int value;
+        while(1){
+           value = (int)inFile.get();
+           if(inFile.eof()){
+               break;
+           }
+           frequency[value]++;
         }
+
+        for(int i = 0; i < frequency.size(); i++){
+            outFile << (frequency[i]);
+            outFile << " ";
+        }
+
         inFile.close();
         HCTree* tree = new HCTree();
         tree->build(frequency);
         inFile.open(argv[1], ios::binary);
-        while(!inFile.eof()){
-           tree->encode(inFile.get(), outFile);
+        while(1){
+           byte symb = inFile.get();
+           if(inFile.eof()){
+               break;
+           }
+           tree->encode(symb, outFile);
         }
         inFile.close();
         outFile.close();
     }
+    return 0;
 }

@@ -18,21 +18,43 @@ using namespace std;
      *  and leaves[i] points to the leaf node containing byte i.
      */
     void HCTree::build(const vector<int>& freqs){
+        HCNode* smallest;
+        HCNode* secSmallest;
+        HCNode* freqSum;
+
+        priority_queue<HCNode*, vector<HCNode*>, HCNodePtrComp> pq;
         for(int i = 0; i < leaves.size(); i++){
             if(freqs[i] != 0){
-                HCNode* temp = new HCNode(freqs[i], i);
+                HCNode* temp = new HCNode(freqs[i], (byte)i);
                 leaves[i] = temp;
+                pq.push(temp);
             }
         }
 
-        priority_queue<HCNode*, vector<HCNode*>, HCNodePtrComp> pq;
-        for(int j = 0; j < leaves.size(); j++){
+/*        for(int j = 0; j < leaves.size(); j++){
             if(leaves[j] != 0){
                 pq.push(leaves[j]);
             }
+        }*/
+        if(pq.size() == 0){
+            return;
         }
-        
-        if(pq.size() == 1){
+        while(pq.size() > 1){
+            smallest = pq.top();
+            pq.pop();
+            secSmallest = pq.top();
+            pq.pop();
+            freqSum = new HCNode(smallest->count + secSmallest->count,
+                                 (char) 33);
+            pq.push(freqSum);
+            smallest->p = freqSum;
+            secSmallest->p = freqSum;
+            freqSum->c0 = secSmallest;
+            freqSum->c1 = smallest; 
+        }
+        root = freqSum;
+
+/*        if(pq.size() == 1){
             HCNode* onlyChild = pq.top();
             int childI = 0;
             for(int i = 0; i < leaves.size(); i++){
@@ -44,15 +66,16 @@ using namespace std;
             HCNode* newParent = new HCNode(onlyChild->count, 
                                            onlyChild->symbol,
                                            leaves[childI]);
-            leaves[childI]->p = newParent;
             pq.push(newParent);
+            leaves[childI]->p = newParent;
             root = pq.top();
             pq.pop();
             return;
         }
-
-        while(pq.size() > 0){
-            HCNode* smallest = pq.top();
+        HCNode* smallest;
+        HCNode* secSmallest;
+        while(pq.size() > 1){
+            smallest = pq.top();
             int smallI, secSmallI;
             for(int i = 0; i < leaves.size(); i++){
                 if(leaves[i] != 0 && leaves[i]->symbol == smallest->symbol){
@@ -60,7 +83,7 @@ using namespace std;
                 }
             }
             pq.pop();
-            HCNode* secSmallest = pq.top();
+            secSmallest = pq.top();
             for(int i = 0; i < leaves.size(); i++){
                 if(leaves[i] != 0 && leaves[i]->symbol == secSmallest->symbol){
                     secSmallI = i;
@@ -75,6 +98,11 @@ using namespace std;
                                                leaves[secSmallI]);  
                 leaves[smallI]->p = newParent;
                 leaves[secSmallI]->p = newParent;
+                cout << "Side1" << endl;
+            cout << (char)newParent->symbol<<endl;
+            cout << (char)newParent->c0->symbol<<endl;
+            cout << (char)newParent->c1->symbol<<endl;
+
                 pq.push(newParent);
             }
             else{ 
@@ -83,13 +111,23 @@ using namespace std;
                                                smallest->symbol,
                                                leaves[secSmallI], 
                                                leaves[smallI]); 
+                pq.push(newParent);
+                cout << "Side2" << endl;
+            cout << (char)newParent->c0->symbol<<endl;
+            cout << (char)newParent->c1->symbol<<endl;
                 leaves[smallI]->p = newParent;
                 leaves[secSmallI]->p = newParent;
-                pq.push(newParent);
             }
         }
+        cout << "root" << endl;
         root = pq.top();
-        pq.pop();
+        cout << (char)root->symbol << endl;
+        cout << (char)root->c0->symbol << endl;
+        cout << (char)root->c1->symbol << endl;
+        cout << (char)root->c0->c0->symbol << endl;
+        cout << (char)root->c0->c1->symbol << endl;
+
+        pq.pop();*/
     }
            
     /** Write to the given BitOutputStream
@@ -153,16 +191,38 @@ using namespace std;
      */
     int HCTree::decode(ifstream& in) const{
         HCNode* tmp = root;
-        while(tmp->c0 != NULL && tmp->c1 != NULL){
-            int tempBit = in.get();
-            if(tempBit == 0){
-                tmp = tmp->c0;
+        char ch;
+        while(1){
+            ch = in.get();
+            if(! in.good()){
+                return -1;
             }
-            else{
-                tmp = tmp->c1;
+            if(ch == '1'){
+                if(tmp->c1 != NULL){
+                    tmp = tmp->c1;
+                }
+                if(tmp->c1 == NULL){
+                    return tmp->symbol;
+                }
             }
+            else if(ch == '0'){
+                if(tmp->c0 != NULL){
+                    tmp = tmp->c0;
+                }
+                if(tmp->c0 == NULL){
+                    return tmp->symbol;
+                }
+            }
+          //  if(tempBit == 0 && tmp->c0 != NULL){
+          //      tmp = tmp->c0;
+          //  }
+          //  else if(tempBit == 1 && tmp->c1 != NULL){
+          //      tmp = tmp->c1;
+          //  } 
+          //  else {
+          //      break;
+          //  }
         }
-        return tmp->symbol;
     }
 
 
