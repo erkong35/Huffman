@@ -78,7 +78,7 @@ using namespace std;
      *  PRECONDITION: build() has been called, to create the coding
      *  tree, and initialize root pointer and leaves vector.
      */
-    void HCTree::encode(byte symbol, BitOutputStream& out) const{}
+//    void HCTree::encode(byte symbol, BitOutputStream& out) const{}
 
     /** Write to the given ofstream
      *  the sequence of bits (as ASCII) coding the given symbol.
@@ -122,7 +122,7 @@ using namespace std;
      *  PRECONDITION: build() has been called, to create the coding
      *  tree, and initialize root pointer and leaves vector.
      */
-    int HCTree::decode(BitInputStream& in) const{}
+//    int HCTree::decode(BitInputStream& in) const{}
 
     /** Return the symbol coded in the next sequence of bits (represented as 
      *  ASCII text) from the ifstream.
