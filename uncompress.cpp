@@ -13,8 +13,13 @@ int main(int argc, char* argv[]){
     else{
         vector<int> frequency(256, 0);
         ifstream inFile;
+        istream& constIStream = inFile;
+
         ofstream outFile;
+        ostream& constOStream = outFile;
+
         inFile.open(argv[1], ios::binary);
+        BitInputStream* in = new BitInputStream(constIStream);
 
         // Checks if input exists and prints error if it does not
         if(!inFile){
@@ -22,25 +27,23 @@ int main(int argc, char* argv[]){
             return 0;
         }
 
-        outFile.open(argv[2], ios::binary);
 
         // Creates the frequency vector by reading the header
-        int value;
         for(unsigned int i = 0; i < frequency.size(); i++){
-            inFile >> value;
-            frequency[i] = value;
+            frequency[i] = in->readInt();
         }
         
         // Building the tree using the frequencies
         HCTree* tree = new HCTree();
         tree->build(frequency);
-
+        outFile.open(argv[2], ios::binary);
+        BitOutputStream* out = new BitOutputStream(constOStream);
         // Decodes the compressed files and writes to the output file
         int val;
         while(1){
-           val = tree->decode(inFile);
-           if(val != -1){    
-               outFile << (char)val;
+           val = tree->decode(*in);
+           if(val != -1){ 
+               out->writeByte((char)val);
            }
            else {
                break;
@@ -49,5 +52,4 @@ int main(int argc, char* argv[]){
         inFile.close();
         outFile.close();
     }
-    return 0;
 }

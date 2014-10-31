@@ -78,21 +78,12 @@ using namespace std;
      *  PRECONDITION: build() has been called, to create the coding
      *  tree, and initialize root pointer and leaves vector.
      */
-//    void HCTree::encode(byte symbol, BitOutputStream& out) const{}
-
-    /** Write to the given ofstream
-     *  the sequence of bits (as ASCII) coding the given symbol.
-     *  PRECONDITION: build() has been called, to create the coding
-     *  tree, and initialize root pointer and leaves vector.
-     *  THIS METHOD IS USEFUL FOR THE CHECKPOINT BUT SHOULD NOT 
-     *  BE USED IN THE FINAL SUBMISSION.
-     */
-    void HCTree::encode(byte symbol, ofstream& out) const{
+    void HCTree::encode(byte symbol, BitOutputStream& out) const{
         vector<int> encodedSymbol;
         int i = 0;
         // Finds the index for the symbol in leaves
         for(unsigned int j = 0; j < leaves.size(); j++){
-            if(leaves[j] != 0 && leaves[j]->symbol == symbol){
+            if((leaves[j] != 0) && (leaves[j]->symbol == symbol)){
                 i = j;
                 break;
             }
@@ -113,34 +104,35 @@ using namespace std;
         // Reverses the path because we started from the bottom
         reverse(encodedSymbol.begin(), encodedSymbol.end());
         for(unsigned int j = 0; j < encodedSymbol.size(); j++){
-            out << encodedSymbol[j];
+            out.writeBit(encodedSymbol[j]);
         }
     }
+
+
+    /** Write to the given ofstream
+     *  the sequence of bits (as ASCII) coding the given symbol.
+     *  PRECONDITION: build() has been called, to create the coding
+     *  tree, and initialize root pointer and leaves vector.
+     *  THIS METHOD IS USEFUL FOR THE CHECKPOINT BUT SHOULD NOT 
+     *  BE USED IN THE FINAL SUBMISSION.
+     */
+//    void HCTree::encode(byte symbol, ofstream& out) const{}
 
 
     /** Return symbol coded in the next sequence of bits from the stream.
      *  PRECONDITION: build() has been called, to create the coding
      *  tree, and initialize root pointer and leaves vector.
      */
-//    int HCTree::decode(BitInputStream& in) const{}
-
-    /** Return the symbol coded in the next sequence of bits (represented as 
-     *  ASCII text) from the ifstream.
-     *  PRECONDITION: build() has been called, to create the coding
-     *  tree, and initialize root pointer and leaves vector.
-     *  THIS METHOD IS USEFUL FOR THE CHECKPOINT BUT SHOULD NOT BE USED
-     *  IN THE FINAL SUBMISSION.
-     */
-    int HCTree::decode(ifstream& in) const{
+    int HCTree::decode(BitInputStream& in) const{
         HCNode* tmp = root;
-        char ch;
+        int i;
         while(1){
-            ch = in.get();
-            if(! in.good()){
+            i = in.readBit();
+            if(i == -1){
                 return -1;
             }
             // Traverses the tree until the correct symbol is reached
-            if(ch == '1'){
+            if(i == 1){
                 if(tmp->c1 != NULL){
                     tmp = tmp->c1;
                 }
@@ -148,7 +140,7 @@ using namespace std;
                     return tmp->symbol;
                 }
             }
-            else if(ch == '0'){
+            else if(i == 0){
                 if(tmp->c0 != NULL){
                     tmp = tmp->c0;
                 }
@@ -159,4 +151,13 @@ using namespace std;
         }
     }
 
+
+    /** Return the symbol coded in the next sequence of bits (represented as 
+     *  ASCII text) from the ifstream.
+     *  PRECONDITION: build() has been called, to create the coding
+     *  tree, and initialize root pointer and leaves vector.
+     *  THIS METHOD IS USEFUL FOR THE CHECKPOINT BUT SHOULD NOT BE USED
+     *  IN THE FINAL SUBMISSION.
+     */
+//    int HCTree::decode(ifstream& in) const{}
 

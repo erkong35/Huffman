@@ -29,9 +29,9 @@ public:
 class HCTree {
 private:
     HCNode* root;
-    vector<HCNode*> leaves;
 
 public:
+    vector<HCNode*> leaves;
     explicit HCTree() : root(0) {
         leaves = vector<HCNode*>(256, (HCNode*) 0);
     }
