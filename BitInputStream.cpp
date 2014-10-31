@@ -22,7 +22,9 @@ using namespace std;
             bufi = 0;
         }
 
-        nextBit = (nextBit & buf) >> 8;
+        // getting next bif from buf
+        nextBit = (nextBit & buf) >> 8; 
+        // shifting buff to right to read next bit
         buf = buf << 1;
         bufi++;
 
@@ -35,8 +37,8 @@ using namespace std;
      *  The client has to manage interaction between reading bits
      *  and reading bytes.
      */
-    int BitInputStream::readByte(){
-    }
+    //int BitInputStream::readByte(){
+    //}
 
     /** Read a non-negative int from the ostream.
      *  Return -1 on EOF.

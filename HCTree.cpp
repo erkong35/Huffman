@@ -131,6 +131,10 @@ using namespace std;
             if(i == -1){
                 return -1;
             }
+            // Take cares of the case where file is empty
+            if(tmp == 0){
+                return -1;
+            }
             // Traverses the tree until the correct symbol is reached
             if(i == 1){
                 if(tmp->c1 != NULL){

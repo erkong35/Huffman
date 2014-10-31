@@ -11,15 +11,19 @@ int main(int argc, char* argv[]){
         cout << "Wrong number of arguments, please enter two files" << endl;
     }
     else{
-        vector<int> frequency(256, 0);
+        // Create the Bit Input and Output streams
         ifstream inFile;
         istream& constIStream = inFile;
+        inFile.open(argv[1], ios::binary);
+        BitInputStream* in = new BitInputStream(constIStream);
+        
 
         ofstream outFile;
         ostream& constOStream = outFile;
+        outFile.open(argv[2], ios::binary);
+        BitOutputStream* out = new BitOutputStream(constOStream);
 
-        inFile.open(argv[1], ios::binary);
-        BitInputStream* in = new BitInputStream(constIStream);
+        vector<int> frequency(256, 0); // vector to store the symbol frequency
 
         // Checks if input exists and prints error if it does not
         if(!inFile){
@@ -36,10 +40,8 @@ int main(int argc, char* argv[]){
         // Building the tree using the frequencies
         HCTree* tree = new HCTree();
         tree->build(frequency);
-        outFile.open(argv[2], ios::binary);
-        BitOutputStream* out = new BitOutputStream(constOStream);
         // Decodes the compressed files and writes to the output file
-        int val;
+        int val; // val from decoding
         while(1){
            val = tree->decode(*in);
            if(val != -1){ 

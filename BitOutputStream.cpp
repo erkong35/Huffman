@@ -14,10 +14,11 @@ using namespace std;
           flush();
       }
 
-      // Shift index spaces and adds in the lsb
-      buf |= (bit & 1) << bufi;
+      // Shift buffer right to add in bit
+      int lsb = bit & 1;
+      buf = buf << 1;
+      buf = lsb | buf;
       bufi++;
-      
   }
 
   /** Write the least significant byte of the argument to the ostream.
