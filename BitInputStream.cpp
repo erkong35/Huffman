@@ -23,7 +23,8 @@ using namespace std;
         }
 
         // getting next bif from buf
-        nextBit = (nextBit &  buf) >> 8; 
+        nextBit = nextBit &  buf;
+        nextBit = nextBit >> 8; 
         // shifting buff to left to read next bit
         buf = buf << 1;
         bufi++;

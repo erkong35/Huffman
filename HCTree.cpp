@@ -37,7 +37,7 @@ using namespace std;
         }
 
         // Handles when there is only 1 symbol (only smallest is used)
-        if(pq.size() == 1){
+        if(pq.size() == 2){
             root = pq.top();
             pq.pop();
             return;

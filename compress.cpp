@@ -46,8 +46,8 @@ int main(int argc, char* argv[]){
            }
            if(chIndex == 8){
                // Increments at the correct index
-               frequency[(int)readCh]++;
                // Reset the char and index
+               frequency[(int)readCh]++;
                readCh <<= 8;
                chIndex = 0;
            }

@@ -36,7 +36,6 @@ int main(int argc, char* argv[]){
         for(unsigned int i = 0; i < frequency.size(); i++){
             frequency[i] = in->readInt();
         }
-        
         // Building the tree using the frequencies
         HCTree* tree = new HCTree();
         tree->build(frequency);
@@ -44,7 +43,7 @@ int main(int argc, char* argv[]){
         int val; // val from decoding
         while(1){
            val = tree->decode(*in);
-           if(val != -1){ 
+           if(!inFile.eof() && val != -1){ 
                out->writeByte((char)val);
            }
            // Reach EOF
