@@ -21,7 +21,7 @@ int main(int argc, char* argv[]){
         outFile.open(argv[2], ios::binary);
         BitOutputStream* out = new BitOutputStream(construcOut);
 
-        char readCh; // char that is being read in
+        unsigned char readCh; // char that is being read in
         int chIndex; // Position that char is currently on
         int value;   // Value of the next bit
         vector<int> frequency(256, 0); // vector to store the symbol frequency
@@ -35,10 +35,10 @@ int main(int argc, char* argv[]){
         // Reads in the file and creates the vector of frequencys
         while(1){
            value = in->readBit();
-           readCh = readCh | value;
+           readCh |= value;
            // Shifts to the right until reach end of the buffer (index 8)
            if(chIndex != 7){ 
-               readCh = readCh << 1;
+               readCh <<= 1;
            }
            chIndex++;
            if(inFile.eof()){
@@ -48,7 +48,7 @@ int main(int argc, char* argv[]){
                // Increments at the correct index
                frequency[(int)readCh]++;
                // Reset the char and index
-               readCh = readCh << 8;
+               readCh <<= 8;
                chIndex = 0;
            }
         }
@@ -69,9 +69,9 @@ int main(int argc, char* argv[]){
         chIndex = 0;
         while(1){
            value = in->readBit();
-           readCh = readCh | value;
+           readCh |= value;
            if(chIndex != 7){
-               readCh = readCh << 1;
+               readCh <<= 1;
            }
            chIndex++;
            if(inFile.eof()){
@@ -83,7 +83,7 @@ int main(int argc, char* argv[]){
                    tree->encode(readCh, *out);
                }
                chIndex = 0;
-               readCh = readCh << 8;
+               readCh <<= 8;
            }
         }
         out->flush();

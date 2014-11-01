@@ -14,10 +14,9 @@ using namespace std;
           flush();
       }
 
-      // Shift buffer right to add in bit
-      int lsb = bit & 1;
-      buf = buf << 1;
-      buf = lsb | buf;
+      // Shift buffer left to add in bit
+      buf <<= 1;
+      buf |= bit;
       bufi++;
   }
 
@@ -27,8 +26,8 @@ using namespace std;
    *  and writing bytes.
    */
   void BitOutputStream::writeByte(int b){
-      out.put(b);
-      out.flush();
+      unsigned char c = static_cast<unsigned char>(b);
+      out.put(c);
   }
 
   /** Write the argument to the ostream.
@@ -45,7 +44,12 @@ using namespace std;
    *  Also flush the ostream itself.
    */
   void BitOutputStream::flush(){
-          out.put(buf);
-          out.flush();
-          buf = bufi = 0;
+//      if(bufi != 0){
+//          buf = buf << (8-bufi);
+//          out.put(buf);
+//          buf = bufi = 0;
+//      }
+      out.put(buf);
+      out.flush();
+      buf = bufi = 0;
   }

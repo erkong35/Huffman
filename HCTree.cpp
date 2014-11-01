@@ -38,16 +38,12 @@ using namespace std;
 
         // Handles when there is only 1 symbol (only smallest is used)
         if(pq.size() == 1){
-            smallest = pq.top();
+            root = pq.top();
             pq.pop();
-            tmpParent = new HCNode(smallest->count, (char) smallest->symbol);
-            smallest->p = tmpParent;
-            tmpParent->c0 = smallest;
-            root = tmpParent;
             return;
         }
 
-        // Handles when there are 2 more symbols
+        // Handles when there are 2 or more symbols
         while(pq.size() > 1){
             smallest = pq.top();
             pq.pop();
@@ -90,6 +86,13 @@ using namespace std;
         }
         
         HCNode* tmp = leaves[i];
+
+        // Case where root is one node
+        if(tmp->p == NULL && tmp->c0 == NULL && tmp->c1 == NULL){
+            out.writeBit(0);
+            return;
+        }
+
         // Creates the path for the leaf
         while(tmp->p != NULL){
             if(tmp->p->c0 == tmp){
@@ -126,6 +129,16 @@ using namespace std;
     int HCTree::decode(BitInputStream& in) const{
         HCNode* tmp = root;
         int i;
+        
+        // Only root tree
+        if(tmp != 0 && tmp->c0 == NULL && tmp->c1 == NULL){
+            i = in.readBit();
+            if(i == -1){
+                return -1;
+            }
+            return tmp->symbol;
+        }
+
         while(1){
             i = in.readBit();
             if(i == -1){

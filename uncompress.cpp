@@ -47,6 +47,7 @@ int main(int argc, char* argv[]){
            if(val != -1){ 
                out->writeByte((char)val);
            }
+           // Reach EOF
            else {
                break;
            }

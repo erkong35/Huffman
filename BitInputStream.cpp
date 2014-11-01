@@ -23,8 +23,8 @@ using namespace std;
         }
 
         // getting next bif from buf
-        nextBit = (nextBit & buf) >> 8; 
-        // shifting buff to right to read next bit
+        nextBit = (nextBit &  buf) >> 8; 
+        // shifting buff to left to read next bit
         buf = buf << 1;
         bufi++;
 
@@ -48,7 +48,7 @@ using namespace std;
      */
     int BitInputStream::readInt(){
         int readInt;
-        in.read(reinterpret_cast<char*>(&readInt), sizeof(int));
+        in.read(reinterpret_cast<char*>(&readInt), sizeof(readInt));
         if(in.eof()){
             return -1;
         }
