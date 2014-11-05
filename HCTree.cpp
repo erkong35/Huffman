@@ -36,8 +36,8 @@ using namespace std;
             return;
         }
 
-        // Handles when there is only 1 symbol (only smallest is used)
-        if(pq.size() == 2){
+        // Handles when there is only 1 symbol
+        if(pq.size() == 1){
             root = pq.top();
             pq.pop();
             return;
@@ -141,13 +141,6 @@ using namespace std;
 
         while(1){
             i = in.readBit();
-            if(i == -1){
-                return -1;
-            }
-            // Take cares of the case where file is empty
-            if(tmp == 0){
-                return -1;
-            }
             // Traverses the tree until the correct symbol is reached
             if(i == 1){
                 if(tmp->c1 != NULL){

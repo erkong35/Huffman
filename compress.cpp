@@ -13,12 +13,17 @@ int main(int argc, char* argv[]){
         // Initializing the Bit Input and Output streams
         ifstream inFile;
         istream& constructIn = inFile;
-        inFile.open(argv[1], ios::binary);
+        inFile.open(argv[1], ios::in | ios::binary);
         BitInputStream* in = new BitInputStream(constructIn);
+
+        // Finds the size of the input file
+        inFile.seekg(0, std::ios_base::end);
+        int fileSize = inFile.tellg();
+        inFile.seekg(0, inFile.beg);
 
         ofstream outFile;
         ostream& construcOut = outFile;
-        outFile.open(argv[2], ios::binary);
+        outFile.open(argv[2], ios::out | ios::binary);
         BitOutputStream* out = new BitOutputStream(construcOut);
 
         unsigned char readCh; // char that is being read in
@@ -46,8 +51,8 @@ int main(int argc, char* argv[]){
            }
            if(chIndex == 8){
                // Increments at the correct index
-               // Reset the char and index
                frequency[(int)readCh]++;
+               // Reset the char and index
                readCh <<= 8;
                chIndex = 0;
            }
@@ -58,15 +63,18 @@ int main(int argc, char* argv[]){
         for(unsigned int i = 0; i < frequency.size(); i++){
             out->writeInt(frequency[i]);
         }
+        // Writes out the size of the file 
+        out->writeInt(fileSize);
 
         // Building the tree using the frequency of symbols
         HCTree* tree = new HCTree();
         tree->build(frequency);
 
         // Encodes the symbols into binary
-        inFile.open(argv[1], ios::binary);
+        inFile.open(argv[1], ios::in | ios::binary);
         in = new BitInputStream(constructIn);
         chIndex = 0;
+        // Reads bits and encodes them once 8 are read in
         while(1){
            value = in->readBit();
            readCh |= value;
@@ -78,7 +86,7 @@ int main(int argc, char* argv[]){
                break;
            }
            if(chIndex == 8){
-               // Encodes if the char is a symbol in the tree
+               // Encodes if the char is in the tree
                if(readCh == tree->leaves[(int)readCh]->symbol){
                    tree->encode(readCh, *out);
                }

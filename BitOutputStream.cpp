@@ -14,7 +14,7 @@ using namespace std;
           flush();
       }
 
-      // Shift buffer left to add in bit
+      // Shift buffer left and add in the bit to the buffer
       buf = buf << 1;
       buf = bit | buf;
       bufi++;
@@ -44,10 +44,10 @@ using namespace std;
    *  Also flush the ostream itself.
    */
   void BitOutputStream::flush(){
-      if(bufi != 0){
-          buf = buf << (8-bufi);
-          out.put(buf);
-          buf = bufi = 0;
-          out.flush();
-      }
+      // Shifts buffer based on how many bits are in before putting to stream
+      // Helps if there are a few random bits left in buffer 
+      buf = buf << (8-bufi);
+      out.put(buf);
+      bufi = 0;
+      out.flush();
   }

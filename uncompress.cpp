@@ -14,15 +14,17 @@ int main(int argc, char* argv[]){
         // Create the Bit Input and Output streams
         ifstream inFile;
         istream& constIStream = inFile;
-        inFile.open(argv[1], ios::binary);
+        inFile.open(argv[1], ios::in | ios::binary);
         BitInputStream* in = new BitInputStream(constIStream);
         
 
         ofstream outFile;
         ostream& constOStream = outFile;
-        outFile.open(argv[2], ios::binary);
+        outFile.open(argv[2], ios::out | ios::binary);
         BitOutputStream* out = new BitOutputStream(constOStream);
 
+        int fileSize;  // Size of original file so uncompress does not decode
+                       // too much.
         vector<int> frequency(256, 0); // vector to store the symbol frequency
 
         // Checks if input exists and prints error if it does not
@@ -36,20 +38,20 @@ int main(int argc, char* argv[]){
         for(unsigned int i = 0; i < frequency.size(); i++){
             frequency[i] = in->readInt();
         }
+        fileSize = in->readInt();
+
         // Building the tree using the frequencies
         HCTree* tree = new HCTree();
         tree->build(frequency);
-        // Decodes the compressed files and writes to the output file
+
         int val; // val from decoding
-        while(1){
+        int counter = 0; // Stops the while loop when this hits the file size
+
+        // Decodes the compressed files and writes to the output file
+        while(counter < fileSize){
            val = tree->decode(*in);
-           if(!inFile.eof() && val != -1){ 
-               out->writeByte((char)val);
-           }
-           // Reach EOF
-           else {
-               break;
-           }
+           out->writeByte((char)val);
+           counter++;
         }
         inFile.close();
         outFile.close();
