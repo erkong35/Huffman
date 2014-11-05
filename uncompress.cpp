@@ -23,8 +23,8 @@ int main(int argc, char* argv[]){
         outFile.open(argv[2], ios::out | ios::binary);
         BitOutputStream* out = new BitOutputStream(constOStream);
 
-        int fileSize;  // Size of original file so uncompress does not decode
-                       // too much.
+        int fileSize;  // Size of original file so uncompress does not
+                                // decode too much
         vector<int> frequency(256, 0); // vector to store the symbol frequency
 
         // Checks if input exists and prints error if it does not
@@ -33,10 +33,19 @@ int main(int argc, char* argv[]){
             return 0;
         }
 
-
+        char getChar; // Checks char for 0's initially
         // Creates the frequency vector by reading the header
         for(unsigned int i = 0; i < frequency.size(); i++){
-            frequency[i] = in->readInt();
+            getChar = in->readByte();
+            // If the char is not 0 put it back and read the int normally
+            if(getChar != 0){
+                inFile.putback(getChar);
+                frequency[i] = in->readInt();
+            } 
+            // If char is 0 just set to 0
+            else{
+                frequency[i] = 0;
+            }
         }
         fileSize = in->readInt();
 

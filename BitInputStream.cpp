@@ -38,8 +38,10 @@ using namespace std;
      *  The client has to manage interaction between reading bits
      *  and reading bytes.
      */
-    //int BitInputStream::readByte(){
-    //}
+    int BitInputStream::readByte(){
+        int readChar = in.get();
+        return readChar;
+    }
 
     /** Read a non-negative int from the ostream.
      *  Return -1 on EOF.

@@ -61,7 +61,13 @@ int main(int argc, char* argv[]){
 
         // Prints out the vector of frequency as the header
         for(unsigned int i = 0; i < frequency.size(); i++){
-            out->writeInt(frequency[i]);
+            // Writes a single 0 byte if freq is 0
+            if(frequency[i] == 0){
+                out->writeByte(0);
+            } 
+            else{
+                out->writeInt(frequency[i]);
+            }
         }
         // Writes out the size of the file 
         out->writeInt(fileSize);
